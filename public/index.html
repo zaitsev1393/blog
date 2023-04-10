@@ -43,12 +43,11 @@
       to avoid connecting the SDK to running emulators.
     -->
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-    <script src="index.js"></script>
+    <script src="index.js" type="module"></script>
   </head>
   <body>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        const loadEl = document.querySelector("#load");
         // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
         // // The Firebase SDK is initialized and available here!
         //
@@ -77,13 +76,8 @@
             "remoteConfig",
             "performance",
           ].filter((feature) => typeof app[feature] === "function");
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(
-            ", "
-          )}`;
         } catch (e) {
           console.error(e);
-          loadEl.textContent =
-            "Error loading the Firebase SDK, check the console.";
         }
       });
     </script>
