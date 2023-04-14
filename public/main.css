@@ -1,7 +1,30 @@
-html,
-body,
-div {
+body {
+  width: 100vw;
+  height: 100vh;
   font-family: "Lato", sans-serif;
+  background: white;
+  color: black;
+}
+
+body.dark {
+  color: white;
+  background: black;
+}
+
+.link {
+  text-decoration: underline;
+  font-weight: 700;
+}
+
+.link:hover {
+  cursor: pointer;
+}
+
+.header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .title {
@@ -9,7 +32,11 @@ div {
 }
 
 .container {
-  width: 50%;
+  width: 40%;
   margin: 0 auto;
   padding: 15px 0;
+}
+
+.hidden {
+  display: none;
 }
