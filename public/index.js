@@ -14,9 +14,19 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 });
 
-const initColorButton = () =>
-  (getById("color-toggle").onclick = () =>
-    document.body.classList.toggle("dark"));
+const toggleColorMode = () => {
+  let colorMode = localStorage.getItem("colorMode");
+  document.body.classList.remove(colorMode);
+  colorMode = colorMode === "dark" ? "light" : "dark";
+  localStorage.setItem("colorMode", colorMode);
+  document.body.classList.add(colorMode);
+};
+
+const initColorButton = () => {
+  const colorMode = localStorage.getItem("colorMode");
+  document.body.classList.add(colorMode);
+  getById("color-toggle").onclick = () => toggleColorMode();
+};
 
 function renderPosts(posts) {
   const postsContainer = getById("posts");
