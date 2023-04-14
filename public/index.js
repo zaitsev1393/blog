@@ -1,7 +1,17 @@
 import { init } from "./app.js";
 import { postService } from "./data-access/post.service.js";
+import { initColorButton } from "./utils/color-mode.js";
 import { getById } from "./utils/dom-utils.js";
 import { log } from "./utils/logger.js";
+
+const dateOptions = {
+  year: "numeric",
+  month: "short",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+};
 
 document.addEventListener("DOMContentLoaded", function () {
   init().then(async ({ app, db }) => {
@@ -14,20 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 });
 
-const toggleColorMode = () => {
-  let colorMode = localStorage.getItem("colorMode");
-  document.body.classList.remove(colorMode);
-  colorMode = colorMode === "dark" ? "light" : "dark";
-  localStorage.setItem("colorMode", colorMode);
-  document.body.classList.add(colorMode);
-};
-
-const initColorButton = () => {
-  const colorMode = localStorage.getItem("colorMode");
-  document.body.classList.add(colorMode);
-  getById("color-toggle").onclick = () => toggleColorMode();
-};
-
 function renderPosts(posts) {
   const postsContainer = getById("posts");
   for (let key in posts) {
@@ -37,7 +33,7 @@ function renderPosts(posts) {
     blogPost.setAttribute("title", post.title);
     blogPost.setAttribute(
       "date",
-      new Date(post.createdAt).toDateString("yyyy-MM-dd")
+      new Date(post.createdAt).toLocaleDateString(undefined, dateOptions)
     );
     blogPost.setAttribute("description", post.description);
     blogPost.onclick = () => navigate(path, post);

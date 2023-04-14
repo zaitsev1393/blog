@@ -8,6 +8,9 @@ class BlogPostPage extends HTMLElement {
     // Define the HTML markup and styling for the component
     shadowRoot.innerHTML = `
       <style>
+        .post-page {
+          padding: 15px;
+        }
         .title {
           font-size: 24px;
         }
@@ -23,7 +26,7 @@ class BlogPostPage extends HTMLElement {
           white-space: pre-wrap;
         }
       </style>
-      <div>
+      <div class = "post-page">
         <div class="title"></div>
         <div class="date"></div>
         <div class="description"></div>

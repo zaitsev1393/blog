@@ -10,7 +10,7 @@ class BlogPost extends HTMLElement {
       <style>
         /* Define the styling for the post component */
         .post {
-          padding: 10px;
+          padding: 15px;
         }
         .post-title {
           font-size: 18px;
