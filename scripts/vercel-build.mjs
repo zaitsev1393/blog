@@ -25,13 +25,55 @@ await cp(join(root, 'dist/blog/browser'), staticDir, { recursive: true });
 // Server bundle → Vercel Edge Function
 await cp(join(root, 'dist/blog/server'), funcDir, { recursive: true });
 
-// Edge function entry: re-export the Fetch API handler from server.mjs
-await writeFile(join(funcDir, 'index.mjs'), `export { netlifyAppEngineHandler as default } from './server.mjs';\n`);
+// package.json needed for ES module support in the Lambda
+await writeFile(join(funcDir, 'package.json'), JSON.stringify({ type: 'module' }));
 
-// Vercel Edge Function config
+// Node.js adapter: converts IncomingMessage ↔ Fetch API to reuse netlifyAppEngineHandler
+await writeFile(join(funcDir, 'index.mjs'), `
+import { netlifyAppEngineHandler } from './server.mjs';
+
+function toFetchRequest(req) {
+  const proto = req.headers['x-forwarded-proto']?.split(',')[0]?.trim() ?? 'https';
+  const host  = req.headers['x-forwarded-host'] ?? req.headers.host ?? 'localhost';
+  const url   = new URL(req.url ?? '/', \`\${proto}://\${host}\`);
+  const headers = new Headers();
+  for (const [k, v] of Object.entries(req.headers)) {
+    if (typeof v === 'string') headers.set(k, v);
+    else if (Array.isArray(v)) v.forEach(val => headers.append(k, val));
+  }
+  const method  = req.method ?? 'GET';
+  const hasBody = method !== 'GET' && method !== 'HEAD';
+  return new Request(url, { method, headers, body: hasBody ? req : undefined, duplex: hasBody ? 'half' : undefined });
+}
+
+async function toNodeResponse(fetchRes, res) {
+  res.statusCode = fetchRes.status;
+  const setCookies = fetchRes.headers.getSetCookie?.() ?? [];
+  if (setCookies.length) res.setHeader('set-cookie', setCookies);
+  for (const [k, v] of fetchRes.headers.entries()) {
+    if (k.toLowerCase() !== 'set-cookie') res.setHeader(k, v);
+  }
+  if (!fetchRes.body) { res.end(); return; }
+  const reader = fetchRes.body.getReader();
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) { res.end(); break; }
+    res.write(value);
+  }
+}
+
+export default async function handler(req, res) {
+  const fetchReq = toFetchRequest(req);
+  const fetchRes = await netlifyAppEngineHandler(fetchReq);
+  await toNodeResponse(fetchRes, res);
+}
+`.trimStart());
+
+// Vercel Serverless Function config (Node.js runtime)
 await writeFile(join(funcDir, '.vc-config.json'), JSON.stringify({
-  runtime: 'edge',
-  entrypoint: 'index.mjs',
+  runtime: 'nodejs22.x',
+  handler: 'index.mjs',
+  launcherType: 'Nodejs',
 }));
 
 // Vercel routing: static files first, everything else → edge function
