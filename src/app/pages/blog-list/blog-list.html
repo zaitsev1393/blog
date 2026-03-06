@@ -1,0 +1,39 @@
+<main class="blog-list">
+  <h1 class="blog-list__title">Blog</h1>
+
+  @if (allTags().length) {
+    <div class="filters">
+      <button
+        class="filter-btn"
+        [class.active]="activeTag() === null"
+        (click)="setTag(null)">
+        All
+      </button>
+      @for (tag of allTags(); track tag) {
+        <button
+          class="filter-btn"
+          [class.active]="activeTag() === tag"
+          (click)="setTag(tag)">
+          {{ tag }}
+        </button>
+      }
+    </div>
+  }
+
+  <div class="post-list">
+    @for (post of posts(); track post.slug) {
+      <a [routerLink]="['/blog', post.slug]" class="post-card">
+        <div class="post-card__meta">
+          <time>{{ post.date | date:'mediumDate' }}</time>
+          @for (tag of post.tags; track tag) {
+            <span class="tag">{{ tag }}</span>
+          }
+        </div>
+        <h2 class="post-card__title">{{ post.title }}</h2>
+        <p class="post-card__excerpt">{{ post.excerpt }}</p>
+      </a>
+    } @empty {
+      <p class="empty">No posts found.</p>
+    }
+  </div>
+</main>

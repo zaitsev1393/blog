@@ -1,0 +1,29 @@
+<main class="post-page">
+  @if (postResource.isLoading()) {
+    <div class="loading">Loading…</div>
+  } @else if (postResource.error()) {
+    <div class="error">
+      <p>Post not found.</p>
+      <a routerLink="/blog">← Back to blog</a>
+    </div>
+  } @else {
+    @let post = postResource.value();
+    @if (post) {
+      <article class="post">
+        <header class="post__header">
+          <a routerLink="/blog" class="post__back">← Blog</a>
+          <div class="post__meta">
+            <time>{{ post.date | date:'longDate' }}</time>
+            @for (tag of post.tags; track tag) {
+              <span class="tag">{{ tag }}</span>
+            }
+          </div>
+          <h1 class="post__title">{{ post.title }}</h1>
+          <p class="post__excerpt">{{ post.excerpt }}</p>
+        </header>
+
+        <div class="post__content" [innerHTML]="safeContent"></div>
+      </article>
+    }
+  }
+</main>

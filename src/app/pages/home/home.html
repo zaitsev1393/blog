@@ -1,0 +1,27 @@
+<main class="home">
+  <section class="hero">
+    <h1 class="hero__title">Hi, I'm a developer.</h1>
+    <p class="hero__sub">I write about Angular, modern web development, and the things I learn along the way.</p>
+    <a routerLink="/blog" class="btn">Read the blog</a>
+  </section>
+
+  @if (recentPosts().length) {
+    <section class="recent">
+      <h2 class="recent__heading">Recent posts</h2>
+      <div class="post-list">
+        @for (post of recentPosts(); track post.slug) {
+          <a [routerLink]="['/blog', post.slug]" class="post-card">
+            <div class="post-card__meta">
+              <time>{{ post.date | date:'mediumDate' }}</time>
+              @for (tag of post.tags; track tag) {
+                <span class="tag">{{ tag }}</span>
+              }
+            </div>
+            <h3 class="post-card__title">{{ post.title }}</h3>
+            <p class="post-card__excerpt">{{ post.excerpt }}</p>
+          </a>
+        }
+      </div>
+    </section>
+  }
+</main>
