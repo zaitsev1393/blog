@@ -5,6 +5,9 @@
 
 # Generated from markdown at build time
 /public/data
+
+# Vercel build output
+/.vercel/output
 /tmp
 /out-tsc
 /bazel-out
