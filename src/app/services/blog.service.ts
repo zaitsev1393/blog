@@ -14,10 +14,10 @@ export class BlogService {
   private baseUrl = inject(API_BASE_URL);
 
   getPosts(): Observable<PostMeta[]> {
-    return this.http.get<PostMeta[]>(`${this.baseUrl}/api/posts`);
+    return this.http.get<PostMeta[]>(`${this.baseUrl}/data/posts.json`);
   }
 
   getPost(slug: string): Observable<Post> {
-    return this.http.get<Post>(`${this.baseUrl}/api/posts/${slug}`);
+    return this.http.get<Post>(`${this.baseUrl}/data/posts/${slug}.json`);
   }
 }

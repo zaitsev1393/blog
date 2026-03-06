@@ -1,4 +1,4 @@
-import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
+import { mergeApplicationConfig, ApplicationConfig, inject, Optional, REQUEST } from '@angular/core';
 import { provideServerRendering, withRoutes } from '@angular/ssr';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { appConfig } from './app.config';
@@ -11,7 +11,14 @@ const serverConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     {
       provide: API_BASE_URL,
-      useFactory: () => `http://localhost:${process.env['PORT'] ?? 4000}`,
+      useFactory: () => {
+        const request = inject(REQUEST, { optional: true });
+        if (request) {
+          const url = new URL(request.url);
+          return `${url.protocol}//${url.host}`;
+        }
+        return `http://localhost:${process.env['PORT'] ?? 4200}`;
+      },
     },
   ],
 };
